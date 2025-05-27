@@ -37,6 +37,11 @@ python mani_skill2_real2sim/examples/demo_manual_control_custom_envs.py -e Grasp
 # for "MoveNearGoogleBakedTexInScene-v1", we also support "-v0". "-v0" uses assets with textures baked onto a single view of each object, 
 # whereas "-v1" applies baked textures to all views of objects using Zero123++.
 
+
+python mani_skill2_real2sim/examples/demo_manual_control_custom_envs.py -e PutEggplantInBasketScene-v0 \
+    -c arm_pd_ee_delta_pose_align_interpolate_by_planner_gripper_pd_joint_target_delta_pos_interpolate_by_planner -o rgbd \
+    --enable-sapien-viewer     prepackaged_config @True     robot google_robot_static
+
 python mani_skill2_real2sim/examples/demo_manual_control_custom_envs.py -e PutEggplantInBasketScene-v0 \
     -c arm_pd_ee_delta_pose_align_interpolate_by_planner_gripper_pd_joint_target_delta_pos_interpolate_by_planner -o rgbd \
     --enable-sapien-viewer     prepackaged_config @True     robot google_robot_static
