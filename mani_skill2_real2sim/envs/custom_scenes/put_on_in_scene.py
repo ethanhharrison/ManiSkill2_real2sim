@@ -486,3 +486,60 @@ class PutEggplantInBasketScene(PutOnBridgeInSceneEnv):
             scale=5,
             shadow_map_size=2048,
         )
+    
+@register_env("PutToyBlockInWoodenBowlScene-v0", max_episode_steps=60)
+class PutToyBlockInWoodenBowlScene(PutOnBridgeInSceneEnv):
+    DEFAULT_MODEL_JSON = "info_pick_custom_v0.json"
+
+    def __init__(
+        self,
+        source_obj_name="green_toy_block",
+        target_obj_name="bowl_download",
+        **kwargs,
+    ):
+        xy_center = np.array([-0.16, 0.00])
+        half_edge_length_xs = [0.05, 0.1]
+        half_edge_length_ys = [0.05, 0.1]
+        xy_configs = []
+
+        for (half_edge_length_x, half_edge_length_y) in zip(
+            half_edge_length_xs, half_edge_length_ys
+        ):
+            grid_pos = np.array([[0, 0], [0, 1], [1, 0], [1, 1]]) * 2 - 1
+            grid_pos = (
+                grid_pos * np.array([half_edge_length_x, half_edge_length_y])[None]
+                + xy_center[None]
+            )
+
+            for i, grid_pos_1 in enumerate(grid_pos):
+                for j, grid_pos_2 in enumerate(grid_pos):
+                    if i != j:
+                        xy_configs.append(np.array([grid_pos_1, grid_pos_2]))
+
+        quat_configs = [np.array([[1, 0, 0, 0], [1, 0, 0, 0]])]
+
+        super().__init__(
+            source_obj_name=source_obj_name,
+            target_obj_name=target_obj_name,
+            xy_configs=xy_configs,
+            quat_configs=quat_configs,
+            **kwargs,
+        )
+
+    def _setup_prepackaged_env_init_config(self):
+        ret = {}
+        ret["robot"] = "widowx"
+        ret["control_freq"] = 5
+        ret["sim_freq"] = 500
+        ret["control_mode"] = "arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos"
+        ret["scene_name"] = "bridge_table_1_v1"
+        ret["camera_cfgs"] = {"add_segmentation": True}
+        ret["rgb_overlay_path"] = str(
+            ASSET_DIR / "real_inpainting/bridge_real_eval_1.png"
+        )
+        ret["rgb_overlay_cameras"] = ["3rd_view_camera"]
+
+        return ret
+
+    def get_language_instruction(self, **kwargs):
+        return "put the green object in the bowl"
